@@ -18,9 +18,9 @@ Clone the project, build its TensorFlow 1.15 Docker image, and start the interac
 
 ```bash
 git clone https://github.com/SharonBayela/DeepNeuralNetworkGP.git
-cd nngp
-docker build --platform linux/amd64 -t nngp-project .
-docker run --platform linux/amd64 -it -v "$(pwd)/output":/nngp/output nngp-project
+cd DeepNeuralNetworkGP
+docker build --platform linux/amd64 -t DeepNeuralNetworkGP-project .
+docker run --platform linux/amd64 -it -v "$(pwd)/output":/DeepNeuralNetworkGP/output DeepNeuralNetworkGP-project
 ```
 
 ## 4. Extension: Written Description
