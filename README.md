@@ -17,27 +17,11 @@ The comparison below uses our MNIST run with `num_train=1000`. Its correlations 
 Clone the project, build its TensorFlow 1.15 Docker image, and start the interactive container from the project directory:
 
 ```bash
-git clone https://github.com/brain-research/nngp.git
+git clone https://github.com/SharonBayela/DeepNeuralNetworkGP.git
 cd nngp
 docker build --platform linux/amd64 -t nngp-project .
-docker run --platform linux/amd64 -it -v "$(pwd)":/nngp tensorflow/tensorflow:1.15.0-py3 bash
-cd /nngp
+docker run --platform linux/amd64 -it -v "$(pwd)/output":/nngp/output nngp-project
 ```
-
-Run the following commands inside the container. The shared flags are written out in each command so each run is independently reproducible. Plots are saved in the mounted project directory.
-
-```bash
-python uncertainty_plot.py --dataset=mnist --num_train=1000 --num_eval=1000 --hparams='depth=3,weight_var=2.0,bias_var=0.2' --nonlinearities='tanh,relu' --output_file=/nngp/uncertainty_fig3_mnist.png
-python uncertainty_plot.py --dataset=mnist --num_train=500 --num_eval=1000 --hparams='depth=3,weight_var=2.0,bias_var=0.2' --nonlinearities='tanh,relu' --output_file=/nngp/uncertainty_fig3_smaller_mnist.png
-python uncertainty_plot.py --dataset=cifar10 --num_train=1000 --num_eval=1000 --hparams='depth=3,weight_var=2.0,bias_var=0.2' --nonlinearities='tanh,relu' --output_file=/nngp/uncertainty_fig3_cifar.png
-python uncertainty_plot.py --dataset=cifar10 --num_train=500 --num_eval=1000 --hparams='depth=3,weight_var=2.0,bias_var=0.2' --nonlinearities='tanh,relu' --output_file=/nngp/uncertainty_fig3_smaller_cifar.png
-python uncertainty_plot.py --dataset=fashion_mnist --num_train=1000 --num_eval=1000 --hparams='depth=3,weight_var=2.0,bias_var=0.2' --nonlinearities='tanh,relu' --output_file=/nngp/uncertainty_fig3_fashion_mnist.png
-python uncertainty_plot.py --dataset=fashion_mnist --num_train=500 --num_eval=1000 --hparams='depth=3,weight_var=2.0,bias_var=0.2' --nonlinearities='tanh,relu' --output_file=/nngp/uncertainty_fig3_smaller_fashion_mnist.png
-python uncertainty_plot.py --dataset=cifar100 --num_train=1000 --num_eval=1000 --hparams='depth=3,weight_var=2.0,bias_var=0.2' --nonlinearities='tanh,relu' --output_file=/nngp/uncertainty_fig3_cifar100.png
-python uncertainty_plot.py --dataset=cifar100 --num_train=500 --num_eval=1000 --hparams='depth=3,weight_var=2.0,bias_var=0.2' --nonlinearities='tanh,relu' --output_file=/nngp/uncertainty_fig3_smaller_cifar100.png
-```
-
-The output filenames distinguish the 500-example runs with `smaller`. Dataset names accepted by the script are `mnist`, `cifar10`, `fashion_mnist`, and `cifar100`.
 
 ## 4. Extension: Written Description
 
