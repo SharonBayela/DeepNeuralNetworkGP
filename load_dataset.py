@@ -118,3 +118,138 @@ def _select_mnist_subset(datasets,
           valid_image, valid_label,
           test_image, test_label)
 
+# --- Additions below: support for Fashion-MNIST and CIFAR-100 ---
+
+def _build_fake_datasets(x_train, y_train, x_test, y_test, num_classes,
+                         val_size=10000, flatten=True):
+  """Wraps raw keras.datasets arrays into the same object shape that
+  input_data.read_data_sets() used to provide, so _select_mnist_subset
+  (or _select_subset below) can consume it unchanged."""
+
+  if flatten:
+    x_train = x_train.reshape(x_train.shape[0], -1).astype('float32') / 255.0
+    x_test = x_test.reshape(x_test.shape[0], -1).astype('float32') / 255.0
+  else:
+    x_train = x_train.astype('float32') / 255.0
+    x_test = x_test.astype('float32') / 255.0
+
+  y_train = np.eye(num_classes)[y_train.reshape(-1)]
+  y_test = np.eye(num_classes)[y_test.reshape(-1)]
+
+  x_valid, y_valid = x_train[:val_size], y_train[:val_size]
+  x_train, y_train = x_train[val_size:], y_train[val_size:]
+
+  class _Split(object):
+    def __init__(self, images, labels):
+      self.images = images
+      self.labels = labels
+      self.num_examples = images.shape[0]
+
+  class _Datasets(object):
+    pass
+
+  datasets = _Datasets()
+  datasets.train = _Split(x_train, y_train)
+  datasets.validation = _Split(x_valid, y_valid)
+  datasets.test = _Split(x_test, y_test)
+  return datasets
+
+
+def _select_subset(datasets,
+                   num_train=100,
+                   digits=None,
+                   seed=9999,
+                   sort_by_class=False,
+                   use_float64=False,
+                   mean_subtraction=False,
+                   random_roated_labels=False,
+                   num_classes=10):
+  """Same logic as _select_mnist_subset, generalized to num_classes so it
+  also works for CIFAR-100. _select_mnist_subset above is left untouched."""
+  if digits is None:
+    digits = list(range(num_classes))
+
+  np.random.seed(seed)
+  digits.sort()
+  subset = copy.deepcopy(datasets)
+
+  num_class = len(digits)
+  num_per_class = num_train // num_class
+
+  idx_list = np.array([], dtype='int64')
+  ys = np.argmax(subset.train.labels, axis=1)
+
+  for digit in digits:
+    if datasets.train.num_examples == num_train:
+      idx_list = np.concatenate((idx_list, np.where(ys == digit)[0]))
+    else:
+      idx_list = np.concatenate((idx_list,
+                                 np.where(ys == digit)[0][:num_per_class]))
+  if not sort_by_class:
+    np.random.shuffle(idx_list)
+
+  data_precision = np.float64 if use_float64 else np.float32
+
+  train_image = subset.train.images[idx_list][:num_train].astype(data_precision)
+  train_label = subset.train.labels[idx_list][:num_train].astype(data_precision)
+  valid_image = subset.validation.images.astype(data_precision)
+  valid_label = subset.validation.labels.astype(data_precision)
+  test_image = subset.test.images.astype(data_precision)
+  test_label = subset.test.labels.astype(data_precision)
+
+  if sort_by_class:
+    train_idx = np.argsort(np.argmax(train_label, axis=1))
+    train_image = train_image[train_idx]
+    train_label = train_label[train_idx]
+
+  if mean_subtraction:
+    train_image_mean = np.mean(train_image)
+    train_label_mean = np.mean(train_label)
+    train_image -= train_image_mean
+    train_label -= train_label_mean
+    valid_image -= train_image_mean
+    valid_label -= train_label_mean
+    test_image -= train_image_mean
+    test_label -= train_label_mean
+
+  if random_roated_labels:
+    r, _ = np.linalg.qr(np.random.rand(num_classes, num_classes))
+    train_label = np.dot(train_label, r)
+    valid_label = np.dot(valid_label, r)
+    test_label = np.dot(test_label, r)
+
+  return (train_image, train_label,
+          valid_image, valid_label,
+          test_image, test_label)
+
+
+def load_fashion_mnist(num_train=50000,
+                       use_float64=False,
+                       mean_subtraction=False,
+                       random_roated_labels=False):
+  """Loads Fashion-MNIST as numpy array (same format as load_mnist)."""
+  (x_train, y_train), (x_test, y_test) = tf.keras.datasets.fashion_mnist.load_data()
+  datasets = _build_fake_datasets(x_train, y_train, x_test, y_test,
+                                  num_classes=10, val_size=10000, flatten=True)
+  return _select_subset(
+      datasets, num_train,
+      use_float64=use_float64,
+      mean_subtraction=mean_subtraction,
+      random_roated_labels=random_roated_labels,
+      num_classes=10)
+
+
+def load_cifar100(num_train=50000,
+                  use_float64=False,
+                  mean_subtraction=False,
+                  random_roated_labels=False):
+  """Loads CIFAR-100 as numpy array (same format as load_mnist)."""
+  (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar100.load_data(label_mode='fine')
+  datasets = _build_fake_datasets(x_train, y_train, x_test, y_test,
+                                  num_classes=100, val_size=5000, flatten=True)
+  return _select_subset(
+      datasets, num_train,
+      use_float64=use_float64,
+      mean_subtraction=mean_subtraction,
+      random_roated_labels=random_roated_labels,
+      num_classes=100)
