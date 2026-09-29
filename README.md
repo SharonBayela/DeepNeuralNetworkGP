@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-This class project reproduces Figure 3 of [“Deep Neural Networks as Gaussian Processes”](https://arxiv.org/abs/1711.00165) by Lee et al. (ICLR 2018). The experiment uses a neural network Gaussian process (NNGP) kernel to compare predictive variance with actual squared prediction error. Test examples are sorted by predicted variance and averaged in groups of 100; each plotted point represents one group. Pearson correlation between the binned variance and error is reported separately for Tanh and ReLU.
+This class project reproduces Figure 3 of [“Deep Neural Networks as Gaussian Processes”](https://arxiv.org/abs/1711.00165) by Lee et al. (ICLR 2018). The repository for this paper ["GitHub Repository"](https://github.com/brain-research/nngp.git)The experiment uses a neural network Gaussian process (NNGP) kernel to compare predictive variance with actual squared prediction error. Test examples are sorted by predicted variance and averaged in groups of 100; each plotted point represents one group. Pearson correlation between the binned variance and error is reported separately for Tanh and ReLU.
 
 ## 2. Reproduction: Original vs. Ours
 
@@ -50,3 +50,4 @@ The phase structure held up qualitatively across all datasets: all correlations 
 - CIFAR-100 with 500 training examples provides only five training images per class. This is a very thin per-class sample and limits how broadly that result can be interpreted.
 - Identical mean-subtraction preprocessing was used across datasets, although it may not be optimal for every dataset.
 - The project uses the pinned TensorFlow 1.15 Docker image, consistent with the original repository’s environment.
+
