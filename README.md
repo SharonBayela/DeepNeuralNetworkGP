@@ -44,7 +44,7 @@ The correlations between binned predictive variance and binned squared error are
 
 The phase structure held up qualitatively across all datasets: all correlations were positive and ranged from 0.54 to 0.99. Its strength varied with dataset difficulty rather than simply with dataset size. MNIST and, surprisingly, CIFAR-100 had near-perfect correlations, even though CIFAR-100 supplies far fewer images per class. CIFAR-10 was the clear outlier, with the weakest values (0.81/0.61 at 1,000 training examples, falling to 0.71/0.54 at 500) despite having ten times more images per class than CIFAR-100. Reducing the training set from 1,000 to 500 mildly weakened correlations overall; the largest changes were for ReLU on CIFAR-10 and CIFAR-100. This pattern suggests that lower training counts can compound the effect of dataset difficulty. In this setup, NNGP uncertainty calibration appears more sensitive to intrinsic visual complexity than to the number of training examples or images per class.
 
-The reproduction confirms the central claim of Figure 3: the NNGP's predictive variance is strongly and positively correlated with its actual squared error, meaning points the model is more uncertain about are indeed the ones it tends to get more wrong
+The reproduction confirms the central claim of Figure 3: the NNGP's predictive variance is strongly and positively correlated with its actual squared error, meaning points the model is more uncertain about are indeed the ones it tends to get more wrong.
 
 ## 5. Known Limitations / Deviations
 
