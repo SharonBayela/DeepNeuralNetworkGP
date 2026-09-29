@@ -52,4 +52,3 @@ The reproduction confirms the central claim of Figure 3: the NNGP's predictive v
 - CIFAR-100 with 500 training examples provides only five training images per class. This is a very thin per-class sample and limits how broadly that result can be interpreted.
 - Identical mean-subtraction preprocessing was used across datasets, although it may not be optimal for every dataset.
 - The project uses the pinned TensorFlow 1.15 Docker image, consistent with the original repository’s environment.
-
